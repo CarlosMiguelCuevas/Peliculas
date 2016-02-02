@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="criteria_label">
+        <item>most popular</item>
+        <item>highest rated</item>
+    </string-array>
+    <string-array name="criteria_value">
+        <item>popularity.desc</item>
+        <item>vote_average.desc</item>
+    </string-array>
+</resources>
