@@ -3,10 +3,9 @@ package mx.com.cubozoft.movies;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,10 +23,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -37,6 +34,9 @@ import java.util.Arrays;
 public class MainActivityFragment extends Fragment {
     private ArrayAdapter<String> mAdapterPeliculas;
     private GridView gv;
+    private String more = "MAS!!";
+    private int currentP;
+    private String currentT;
 
     public MainActivityFragment() {
     }
@@ -44,6 +44,7 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        currentP = 1;
         callFetchMovieTask();
     }
 
@@ -61,7 +62,15 @@ public class MainActivityFragment extends Fragment {
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getContext(),mAdapterPeliculas.getItem(position).toString(), Toast.LENGTH_SHORT).show();
+                if(mAdapterPeliculas.getItem(position).equals(more))
+                {
+                    //o sea es el ultimo
+                    callFetchMovieTask();
+                }
+                else
+                {
+                    Toast.makeText(getContext(), mAdapterPeliculas.getItem(position).toString(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -74,7 +83,7 @@ public class MainActivityFragment extends Fragment {
         SharedPreferences shpref = PreferenceManager.getDefaultSharedPreferences(getContext());
         String criterio = shpref.getString(getString(R.string.pref_list_key),getString(R.string.pref_list_defval));
 
-        new FetchMovieInfoTask().execute(criterio);
+        new FetchMovieInfoTask().execute(criterio,Integer.toString(currentP));
     }
 
 
@@ -84,9 +93,17 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(Lista ls) {
             if(ls.getLista() == null){return;}
-            if(ls.getNoPagina() != 1){mAdapterPeliculas.remove("MAS!!!");}
-//            mAdapterPeliculas.clear();
+            if(ls.getNoPagina() == 1)
+            {
+                mAdapterPeliculas.clear();
+            }
+            else
+            {
+                mAdapterPeliculas.remove(more);
+            }
+
             mAdapterPeliculas.addAll(ls.listaFinal());
+            currentP ++;
 //            mAdapterPeliculas.notifyDataSetChanged();
         }
 
@@ -168,7 +185,7 @@ public class MainActivityFragment extends Fragment {
                 moviesJsonStr = buffer.toString();
                 peliculas = getDataFromJson(moviesJsonStr);
 
-                return new Lista(Integer.parseInt(PAGEVAL),peliculas);
+                return new Lista(Integer.parseInt(PAGEVAL), new ArrayList<String>(Arrays.asList(peliculas)));
 
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);

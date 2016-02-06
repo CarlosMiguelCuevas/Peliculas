@@ -1,18 +1,18 @@
 package mx.com.cubozoft.movies;
 
+import java.util.ArrayList;
+
 /**
  * Created by CarlosMiguel on 18/01/2016.
  */
 public class Lista {
     private int noPagina;
-    private String[] lista;
+    private ArrayList<String> lista;
 
-    public Lista(int np, String[] ls)
-    {
+    public Lista(int np, ArrayList<String> ls) {
         setNoPagina(np);
         setLista(ls);
     }
-
 
     public int getNoPagina() {
         return noPagina;
@@ -22,27 +22,17 @@ public class Lista {
         this.noPagina = noPagina;
     }
 
-    public String[] getLista() {
+    public ArrayList<String> getLista() {
         return lista;
     }
 
-    public void setLista(String[] lista) {
+    public void setLista(ArrayList<String> lista) {
         this.lista = lista;
     }
 
-    public String[] listaFinal()
-    {
-        String[] newList = new String[this.lista.length+1];
+    public ArrayList<String> listaFinal() {
 
-        for(int i = 0; i< this.lista.length; i++)
-        {
-            newList[i] = this.lista[i];
-            if(i==this.lista.length-1)
-            {
-                newList[i] = "MAS!!!";
-            }
-        }
-
-        return newList;
+        lista.add("MAS!!");
+        return lista;
     }
 }
